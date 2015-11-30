@@ -31,14 +31,13 @@ var whereTemplate = " WHERE {{with .Conditions}}{{range $condIndex, $cond := .}}
 
 // SelectTemplate is a template for the Select statement
 func SelectTemplate(useConditional bool) *template.Template {
-	tmpl := template.New("selectTemplate")
-
-	tmplString := "SELECT {{range $colIndex, $column := .Columns}}{{if $colIndex}}, {{end}}{{if eq $column \"*\"}}{{$column}}{{else}}`{{$column}}`{{end}}{{end}}"
-	tmplString += " FROM `{{.Table}}`"
+	var tmpl *template.Template
+	var err error
 	if useConditional {
-		tmplString += whereTemplate
+		tmpl, err = template.ParseFiles("sql/templates/select.tpl", "sql/templates/where.tpl")
+	} else {
+		tmpl, err = template.ParseFiles("sql/templates/select.tpl")
 	}
-	tmpl, err := tmpl.Parse(tmplString)
 
 	if err != nil {
 		log.Fatalf("Error in the 'Select' template: %v\n", err)
@@ -49,11 +48,7 @@ func SelectTemplate(useConditional bool) *template.Template {
 
 // InsertTemplate is a template for the Insert statement
 func InsertTemplate() *template.Template {
-	tmpl := template.New("insertTemplate")
-
-	tmplString := "INSERT INTO `{{.Table}}`({{range $index, $column := .Columns}}{{if $index}}, {{end}}`{{$column}}`{{end}})"
-	tmplString += " VALUES ({{range $index, $value := .Values}}{{if $index}}, {{end}}'{{$value}}'{{end}})"
-	tmpl, err := tmpl.Parse(tmplString)
+	tmpl, err := template.ParseFiles("sql/templates/select.tpl")
 
 	if err != nil {
 		log.Fatalf("Error in the 'Insert' template: %v\n", err)
@@ -64,14 +59,13 @@ func InsertTemplate() *template.Template {
 
 // UpdateTemplate is a template for the Insert statement
 func UpdateTemplate(useConditional bool) *template.Template {
-	tmpl := template.New("updateTemplate")
-
-	tmplString := "UPDATE `{{.Table}}` SET "
-	tmplString += "{{range $colIndex, $column := .Columns}}{{if $colIndex}}, {{end}}`{{$column}}`='{{index $.Values $colIndex}}'{{end}}"
+	var tmpl *template.Template
+	var err error
 	if useConditional {
-		tmplString += whereTemplate
+		tmpl, err = template.ParseFiles("sql/templates/update.tpl", "sql/templates/where.tpl")
+	} else {
+		tmpl, err = template.ParseFiles("sql/templates/update.tpl")
 	}
-	tmpl, err := tmpl.Parse(tmplString)
 
 	if err != nil {
 		log.Fatalf("Error in the 'Update' template: %v\n", err)
