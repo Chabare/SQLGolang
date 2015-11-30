@@ -27,8 +27,6 @@ type UpdateStruct struct {
 	Conditions []Condition
 }
 
-var whereTemplate = " WHERE {{with .Conditions}}{{range $condIndex, $cond := .}}{{if $condIndex}} AND {{end}}`{{$cond.Column}}`='{{$cond.Value}}'{{end}}{{end}}"
-
 // SelectTemplate is a template for the Select statement
 func SelectTemplate(useConditional bool) *template.Template {
 	var tmpl *template.Template
@@ -48,7 +46,7 @@ func SelectTemplate(useConditional bool) *template.Template {
 
 // InsertTemplate is a template for the Insert statement
 func InsertTemplate() *template.Template {
-	tmpl, err := template.ParseFiles("sql/templates/select.tpl")
+	tmpl, err := template.ParseFiles("sql/templates/insert.tpl")
 
 	if err != nil {
 		log.Fatalf("Error in the 'Insert' template: %v\n", err)
