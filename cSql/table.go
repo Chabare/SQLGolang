@@ -1,4 +1,4 @@
-package sql
+package cSql
 
 import (
 	"bytes"
