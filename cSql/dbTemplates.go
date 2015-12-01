@@ -2,6 +2,8 @@ package cSql
 
 import (
 	"log"
+	"path"
+	"runtime"
 	"text/template"
 )
 
@@ -27,14 +29,19 @@ type UpdateStruct struct {
 	Conditions []Condition
 }
 
+var _, base, _, _ = runtime.Caller(1)
+
 // SelectTemplate is a template for the Select statement
 func SelectTemplate(useConditional bool) *template.Template {
 	var tmpl *template.Template
 	var err error
+
+	selectTpl := path.Join(path.Dir(base), "/templates/select.tpl")
 	if useConditional {
-		tmpl, err = template.ParseFiles("sql/templates/select.tpl", "sql/templates/where.tpl")
+		whereTpl := path.Join(path.Dir(base), "/templates/where.tpl")
+		tmpl, err = template.ParseFiles(selectTpl, whereTpl)
 	} else {
-		tmpl, err = template.ParseFiles("sql/templates/select.tpl")
+		tmpl, err = template.ParseFiles(selectTpl)
 	}
 
 	if err != nil {
@@ -46,7 +53,8 @@ func SelectTemplate(useConditional bool) *template.Template {
 
 // InsertTemplate is a template for the Insert statement
 func InsertTemplate() *template.Template {
-	tmpl, err := template.ParseFiles("sql/templates/insert.tpl")
+	insertTpl := path.Join(path.Dir(base), "/templates/insert.tpl")
+	tmpl, err := template.ParseFiles(insertTpl)
 
 	if err != nil {
 		log.Fatalf("Error in the 'Insert' template: %v\n", err)
@@ -59,10 +67,12 @@ func InsertTemplate() *template.Template {
 func UpdateTemplate(useConditional bool) *template.Template {
 	var tmpl *template.Template
 	var err error
+	updateTpl := path.Join(path.Dir(base), "/templates/update.tpl")
 	if useConditional {
-		tmpl, err = template.ParseFiles("sql/templates/update.tpl", "sql/templates/where.tpl")
+		whereTpl := path.Join(path.Dir(base), "/templates/where.tpl")
+		tmpl, err = template.ParseFiles(updateTpl, whereTpl)
 	} else {
-		tmpl, err = template.ParseFiles("sql/templates/update.tpl")
+		tmpl, err = template.ParseFiles(updateTpl)
 	}
 
 	if err != nil {
