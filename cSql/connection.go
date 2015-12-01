@@ -19,3 +19,16 @@ func CreateConnection(host, port, user, pass, name string) *mysql.Conn {
 
 	return &d
 }
+
+// CreateConnectionByConfig creates a connection to the database
+func CreateConnectionByConfig(c *Config) *mysql.Conn {
+	d := mysql.New("tcp", "", c.Host+":"+c.Port, c.User, c.Pass, c.Name)
+
+	err := d.Connect()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &d
+}
