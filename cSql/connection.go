@@ -32,3 +32,16 @@ func CreateConnectionByConfig(c *Config) *mysql.Conn {
 
 	return &d
 }
+
+// CreateConnection as function of struct Config
+func (c *Config) CreateConnection() *mysql.Conn {
+	d := mysql.New("tcp", "", c.Host+":"+c.Port, c.User, c.Pass, c.Name)
+
+	err := d.Connect()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &d
+}
